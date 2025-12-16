@@ -1,14 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
-import android.provider.Settings;
-
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 @TeleOp
-public class HelloWorld extends OpMode {
+public class IntakeCodeV1 extends OpMode {
     public DcMotor intake1;
     public DcMotor intake2;
     public DcMotor hood;
