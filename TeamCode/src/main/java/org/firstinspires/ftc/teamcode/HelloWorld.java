@@ -34,8 +34,9 @@ public class HelloWorld extends OpMode {
     public void loop() {
         telemetry.addData("Dominic","is the best");
         telemetry.addData("gamepad y power", gamepad2.left_stick_y);
+        hood.setPower(gamepad2.left_stick_y);
+
         intake1.setPower(gamepad2.right_stick_y);
         intake2.setPower(gamepad2.right_stick_y);
-
     }
 }
