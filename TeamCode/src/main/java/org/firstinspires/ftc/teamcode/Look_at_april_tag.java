@@ -16,6 +16,8 @@ public class Look_at_april_tag extends LinearOpMode {
     //Limelight
     Limelight3A limelight;
 
+    Boolean fieldCentric = true;
+
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -74,38 +76,67 @@ public class Look_at_april_tag extends LinearOpMode {
             // This button choice was made so that it is hard to hit on accident,
             // it can be freely changed based on preference.
             // The equivalent button is start on Xbox-style controllers.
-            if (gamepad1.options) {
+            if (gamepad1.right_trigger_pressed) {
                 imu.resetYaw();
             }
 
-            double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-
-            // Rotate the movement direction counter to the bot's rotation
-            double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
-            double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
-
-            rotX = rotX * 1.1;  // Counteract imperfect strafing
-
-            // Denominator is the largest motor power (absolute value) or 1
-            // This ensures all the powers maintain the same ratio,
-            // but only if at least one is out of the range [-1, 1]
-            double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
-            double frontLeftPower = (rotY + rotX + rx) / denominator;
-            double backLeftPower = (rotY - rotX + rx) / denominator;
-            double frontRightPower = (rotY - rotX - rx) / denominator;
-            double backRightPower = (rotY + rotX - rx) / denominator;
-
-            if (gamepad1.left_trigger != 0){
-                frontLeftMotor.setPower(frontLeftPower / 3);
-                backLeftMotor.setPower(backLeftPower / 3);
-                frontRightMotor.setPower(frontRightPower / 3);
-                backRightMotor.setPower(backRightPower/ 3);
-            } else {
-                frontLeftMotor.setPower(frontLeftPower);
-                backLeftMotor.setPower(backLeftPower);
-                frontRightMotor.setPower(frontRightPower);
-                backRightMotor.setPower(backRightPower);
+            if (gamepad1.x){
+                fieldCentric = !fieldCentric;
             }
+
+
+            if (fieldCentric) {
+                double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+
+                // Rotate the movement direction counter to the bot's rotation
+                double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+                double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
+
+                rotX = rotX * 1.1;  // Counteract imperfect strafing
+
+                // Denominator is the largest motor power (absolute value) or 1
+                // This ensures all the powers maintain the same ratio,
+                // but only if at least one is out of the range [-1, 1]
+                double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+                double frontLeftPower = (rotY + rotX + rx) / denominator;
+                double backLeftPower = (rotY - rotX + rx) / denominator;
+                double frontRightPower = (rotY - rotX - rx) / denominator;
+                double backRightPower = (rotY + rotX - rx) / denominator;
+                if (gamepad1.left_trigger != 0){
+                    frontLeftMotor.setPower(frontLeftPower / 3);
+                    backLeftMotor.setPower(backLeftPower / 3);
+                    frontRightMotor.setPower(frontRightPower / 3);
+                    backRightMotor.setPower(backRightPower/ 3);
+                } else {
+                    frontLeftMotor.setPower(frontLeftPower);
+                    backLeftMotor.setPower(backLeftPower);
+                    frontRightMotor.setPower(frontRightPower);
+                    backRightMotor.setPower(backRightPower);
+                }
+
+            } else {
+                // Denominator is the largest motor power (absolute value) or 1
+                // This ensures all the powers maintain the same ratio,
+                // but only if at least one is out of the range [-1, 1]
+                double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
+                double frontLeftPower = (y + x + rx) / denominator;
+                double backLeftPower = (y - x + rx) / denominator;
+                double frontRightPower = (y - x - rx) / denominator;
+                double backRightPower = (y + x - rx) / denominator;
+                if (gamepad1.left_trigger != 0){
+                    frontLeftMotor.setPower(frontLeftPower / 3);
+                    backLeftMotor.setPower(backLeftPower / 3);
+                    frontRightMotor.setPower(frontRightPower / 3);
+                    backRightMotor.setPower(backRightPower/ 3);
+                } else {
+                    frontLeftMotor.setPower(frontLeftPower);
+                    backLeftMotor.setPower(backLeftPower);
+                    frontRightMotor.setPower(frontRightPower);
+                    backRightMotor.setPower(backRightPower);
+                }
+            }
+
+
 
 
 
