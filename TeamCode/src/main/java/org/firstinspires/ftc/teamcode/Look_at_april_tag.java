@@ -58,15 +58,15 @@ public class Look_at_april_tag extends LinearOpMode {
             double x = gamepad1.left_stick_x;
             double rx = gamepad1.right_stick_x;
 
-            if (gamepad2.b){
+            if (gamepad1.b){
                 LLResult result = limelight.getLatestResult();
                 if (result != null && result.isValid()) {
                     double tx = result.getTx();
                     double ty = result.getTy(); // How far up or down the target is (degrees)
                     double ta = result.getTa(); // How big the target looks (0%-100% of the image)
 
-                    rx = tx;
-                    telemetry.addData("tx", tx);
+                    rx = tx/25;
+                    telemetry.addData("rx", rx);
 
                 }
             }
