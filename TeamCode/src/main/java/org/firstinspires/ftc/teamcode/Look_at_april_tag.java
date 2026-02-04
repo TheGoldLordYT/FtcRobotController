@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -9,11 +11,17 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @TeleOp
-public class TestFieldCentricDrive extends LinearOpMode {
+public class Look_at_april_tag extends LinearOpMode {
+
+    //Limelight
+    Limelight3A limelight;
+
+
     @Override
     public void runOpMode() throws InterruptedException {
         // Declare our motors
         // Make sure your ID's match your configuration
+
         DcMotor frontLeftMotor = hardwareMap.dcMotor.get("frontLeft");
         DcMotor backLeftMotor = hardwareMap.dcMotor.get("backLeft");
         DcMotor frontRightMotor = hardwareMap.dcMotor.get("frontRight");
@@ -27,6 +35,10 @@ public class TestFieldCentricDrive extends LinearOpMode {
         frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        //Limelight
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
+        limelight.start(); // This tells Limelight to start looking!
 
         // Retrieve the IMU from the hardware map
         IMU imu = hardwareMap.get(IMU.class, "imu");
@@ -45,6 +57,19 @@ public class TestFieldCentricDrive extends LinearOpMode {
             double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
             double x = gamepad1.left_stick_x;
             double rx = gamepad1.right_stick_x;
+
+            if (gamepad2.b){
+                LLResult result = limelight.getLatestResult();
+                if (result != null && result.isValid()) {
+                    double tx = result.getTx();
+                    double ty = result.getTy(); // How far up or down the target is (degrees)
+                    double ta = result.getTa(); // How big the target looks (0%-100% of the image)
+
+                    rx = tx;
+                    telemetry.addData("tx", tx);
+
+                }
+            }
 
             // This button choice was made so that it is hard to hit on accident,
             // it can be freely changed based on preference.
