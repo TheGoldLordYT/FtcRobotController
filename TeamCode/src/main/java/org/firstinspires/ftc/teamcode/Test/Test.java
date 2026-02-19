@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp
 public class Test extends OpMode {
@@ -17,12 +19,17 @@ public class Test extends OpMode {
 
     public double hoodPOS = 0;
 
+    public final double hoodMAX = 0;
+    public final double hoodMIN = -1380.0601;
+
     @Override
     public void init(){
 
         shooter = hardwareMap.get(DcMotor.class, "shooter");
         intake = hardwareMap.get(DcMotor.class, "intake");
         hood = hardwareMap.get(CRServo.class, "hood");
+
+        shooter.setDirection(DcMotorSimple.Direction.REVERSE);
 
         //Limelight
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
@@ -40,10 +47,18 @@ public class Test extends OpMode {
         LLResult result = limelight.getLatestResult();
         if (result != null && result.isValid() && gamepad1.a) {
             telemetry.addData("Ta", result.getTa());
+            telemetry.addData("Distance", getDistanceFromAprilTag(result.getTa()));
         }
 
-        hood.setPower(gamepad1.left_stick_y);
-        hoodPOS += gamepad1.left_stick_y;
+        if (((hoodPOS + gamepad1.left_stick_y) > hoodMIN) && (hoodPOS + gamepad1.left_stick_y) < hoodMAX){
+            hood.setPower(gamepad1.left_stick_y);
+            hoodPOS += gamepad1.left_stick_y;
+        }
+        telemetry.addData("HoodPOS", hoodPOS);
+
+        if (gamepad1.right_bumper){
+            hoodPOS = 0;
+        }
 
         if (gamepad1.x){
             shooter.setPower(1);
@@ -60,7 +75,17 @@ public class Test extends OpMode {
             telemetry.addData("intakePOWER", 0.5);
         }
 
+        intake.setPower(gamepad1.right_stick_y);
+
         telemetry.update();
 
     }
+
+    public double getDistanceFromAprilTag(double ta){
+        double scale = 30665.95;
+        double distance = (scale/ta);
+        return distance;
+
+    }
+
 }
