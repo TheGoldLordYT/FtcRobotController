@@ -1,18 +1,15 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.Test;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import com.qualcomm.robotcore.hardware.Servo;
-
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 @TeleOp
-public class The_Final_Countdown extends LinearOpMode {
+public class TestFieldCentricDrive extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         // Declare our motors
@@ -21,24 +18,6 @@ public class The_Final_Countdown extends LinearOpMode {
         DcMotor backLeftMotor = hardwareMap.dcMotor.get("backLeft");
         DcMotor frontRightMotor = hardwareMap.dcMotor.get("frontRight");
         DcMotor backRightMotor = hardwareMap.dcMotor.get("backRight");
-
-        //Hood
-        CRServo hood = hardwareMap.crservo.get("hood");
-        int hoodPOS = 0;
-        int hoodMIN = 0;
-        int hoodMAX = 100000;
-
-        //Turret
-        CRServo turret = hardwareMap.crservo.get("turret");
-        int turretANG = 0;
-        int fullRotate = 1000;
-
-        //Hood
-        DcMotor shooter1 = hardwareMap.dcMotor.get("shooter1");
-        DcMotor shooter2 = hardwareMap.dcMotor.get("shooter2");
-
-        //Intake
-        DcMotor intake = hardwareMap.dcMotor.get("intake");
 
         // Reverse the right side motors. This may be wrong for your setup.
         // If your robot moves backwards when commanded to go forwards,
@@ -92,47 +71,16 @@ public class The_Final_Countdown extends LinearOpMode {
             double backRightPower = (rotY + rotX - rx) / denominator;
 
             if (gamepad1.left_trigger != 0){
-                frontLeftMotor.setPower(frontLeftPower / 4);
-                backLeftMotor.setPower(backLeftPower / 4);
-                frontRightMotor.setPower(frontRightPower / 4);
-                backRightMotor.setPower(backRightPower/ 4);
+                frontLeftMotor.setPower(frontLeftPower / 3);
+                backLeftMotor.setPower(backLeftPower / 3);
+                frontRightMotor.setPower(frontRightPower / 3);
+                backRightMotor.setPower(backRightPower/ 3);
             } else {
                 frontLeftMotor.setPower(frontLeftPower);
                 backLeftMotor.setPower(backLeftPower);
                 frontRightMotor.setPower(frontRightPower);
                 backRightMotor.setPower(backRightPower);
             }
-
-            //The intake grabbing the balls
-            if (gamepad2.left_trigger != 0){
-                intake.setPower(1);
-            } else {
-                intake.setPower(0);
-            }
-
-            //The shooter
-            if (gamepad2.right_trigger != 0){
-                shooter1.setPower(1);
-                shooter2.setPower(-1);
-            } else {
-                shooter1.setPower(0);
-                shooter2.setPower(0);
-            }
-
-            //Hood power
-            if (!(hoodPOS + gamepad2.left_stick_y < hoodMIN) && !(hoodPOS + gamepad2.left_stick_y > hoodMAX)){
-                hood.setPower(gamepad2.left_stick_y);
-            } else {
-                hood.setPower(0);
-            }
-
-            //Just some debuging
-            if (gamepad2.a) {
-                telemetry.addData("Hood position", hoodPOS);
-            }
-
-            //Turret servo
-            turret.setPower(gamepad2.left_stick_x);
 
 
 
