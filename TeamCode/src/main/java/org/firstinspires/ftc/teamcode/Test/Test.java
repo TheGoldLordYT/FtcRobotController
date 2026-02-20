@@ -37,6 +37,8 @@ public class Test extends OpMode {
     private DcMotor shooter;
     private DcMotor intake;
     private CRServo hood;
+    private CRServo turret;
+    private DcMotor transfer;
 
     private IMU imu;
     private Limelight3A limelight;
@@ -84,7 +86,9 @@ public class Test extends OpMode {
 
         shooter = hardwareMap.get(DcMotor.class, "shooter");
         intake = hardwareMap.get(DcMotor.class, "intake");
+        transfer = hardwareMap.get(DcMotor.class, "transfer");
         hood = hardwareMap.get(CRServo.class, "hood");
+        turret = hardwareMap.get(CRServo.class, "turret");
 
         shooter.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -174,17 +178,17 @@ public class Test extends OpMode {
 
         if (gamepad1.x){
             shooter.setPower(1);
-            telemetry.addData("intakePOWER", 1);
+            telemetry.addData("shooterPOWER", 1);
         }
 
         if (gamepad1.y){
             shooter.setPower(0);
-            telemetry.addData("intakePOWER", 0);
+            telemetry.addData("shooterPOWER", 0);
         }
 
         if (gamepad1.b){
             shooter.setPower(-power);
-            telemetry.addData("intakePOWER", power);
+            telemetry.addData("shooterPOWER", power);
         }
 
         if (gamepad1.left_bumper) {
@@ -193,6 +197,28 @@ public class Test extends OpMode {
         }
 
         telemetry.update();
+
+        if (gamepad1.dpad_down){
+            intake.setPower(1);
+        } else if (gamepad1.dpad_up){
+            intake.setPower(-1);
+        } else {
+            intake.setPower(0);
+        }
+
+        if (gamepad1.right_trigger_pressed){
+            transfer.setPower(1);
+        } else {
+            transfer.setPower(0);
+        }
+
+        if (gamepad1.dpad_left) {
+            turret.setPower(-1);
+        } else if (gamepad1.dpad_right) {
+            turret.setPower(1);
+        } else {
+            turret.setPower(0);
+        }
 
     }
 

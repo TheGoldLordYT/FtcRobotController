@@ -21,7 +21,7 @@ public class TestTurrert extends OpMode {
     private double angleTolerance = 0.2;
 
     //Tune this
-    private final double MAX_POWER = 0.6;
+    private final double MAX_POWER = 1;
     private double power = 0;
     private final ElapsedTime timer = new ElapsedTime();
 
@@ -55,6 +55,7 @@ public class TestTurrert extends OpMode {
 
         LLResult result = limelight.getLatestResult();
         if (result != null && result.isValid() && gamepad2.left_bumper) {
+            telemetry.addLine("Tag found");
             double error = goalX - result.getTx();
             double pTerm = error * kP;
 
@@ -66,15 +67,17 @@ public class TestTurrert extends OpMode {
             if (Math.abs(error) < angleTolerance){
                 power = 0;
             } else {
-                power = Range.clip(pTerm + dTerm, -MAX_POWER, MAX_POWER);
+                power = Range.clip(pTerm + dTerm, -MAX_POWER, MAX_POWER * 200);
             }
 
             //Take this out later, and actually set the power.
+            turret.setPower(power);
             telemetry.addData("Power", power);
-            lastError = 0;
+            lastError = error;
 
 
         } else {
+            telemetry.addLine("Looking for tag");
             turret.setPower(0);
             lastError = 0;
         }
