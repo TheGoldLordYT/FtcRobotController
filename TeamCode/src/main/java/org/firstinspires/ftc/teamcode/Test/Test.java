@@ -22,6 +22,8 @@ public class Test extends OpMode {
     public final double hoodMAX = 0;
     public final double hoodMIN = -1380.0601;
 
+    public double power = 0;
+
     @Override
     public void init(){
 
@@ -51,8 +53,10 @@ public class Test extends OpMode {
         }
 
         if (((hoodPOS + gamepad1.left_stick_y) > hoodMIN) && (hoodPOS + gamepad1.left_stick_y) < hoodMAX){
-            hood.setPower(gamepad1.left_stick_y);
-            hoodPOS += gamepad1.left_stick_y;
+            if (Math.abs(gamepad1.left_stick_y) == 1 || gamepad1.left_stick_y == 0) {
+                hood.setPower(gamepad1.left_stick_y);
+                hoodPOS += gamepad1.left_stick_y;
+            }
         }
         telemetry.addData("HoodPOS", hoodPOS);
 
@@ -71,11 +75,14 @@ public class Test extends OpMode {
         }
 
         if (gamepad1.b){
-            shooter.setPower(0.5);
-            telemetry.addData("intakePOWER", 0.5);
+            shooter.setPower(-power);
+            telemetry.addData("intakePOWER", power);
         }
 
-        intake.setPower(gamepad1.right_stick_y);
+        if (gamepad1.left_bumper) {
+            power = gamepad1.right_stick_y;
+            telemetry.addData("Power", power);
+        }
 
         telemetry.update();
 
@@ -87,5 +94,7 @@ public class Test extends OpMode {
         return distance;
 
     }
+
+
 
 }
