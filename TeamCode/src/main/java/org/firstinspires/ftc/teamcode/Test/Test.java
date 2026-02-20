@@ -3,11 +3,13 @@ package org.firstinspires.ftc.teamcode.Test;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
@@ -36,6 +38,7 @@ public class Test extends OpMode {
     private DcMotor intake;
     private CRServo hood;
 
+    private IMU imu;
     private Limelight3A limelight;
 
     public double hoodPOS = 0;
@@ -46,8 +49,38 @@ public class Test extends OpMode {
 
     public double power = 0;
 
+    private DcMotor frontLeftMotor;
+    private DcMotor backLeftMotor;
+    private DcMotor frontRightMotor;
+    private DcMotor backRightMotor;
+
     @Override
     public void init(){
+
+        // Declare our motors
+        // Make sure your ID's match your configuration
+        frontLeftMotor = hardwareMap.dcMotor.get("frontLeft");
+        backLeftMotor = hardwareMap.dcMotor.get("backLeft");
+        frontRightMotor = hardwareMap.dcMotor.get("frontRight");
+        backRightMotor = hardwareMap.dcMotor.get("backRight");
+
+        // Reverse the right side motors. This may be wrong for your setup.
+        // If your robot moves backwards when commanded to go forwards,
+        // reverse the left side instead.
+        // See the note about this earlier on this page.
+        frontRightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        // Retrieve the IMU from the hardware map
+        imu = hardwareMap.get(IMU.class, "imu");
+        // Adjust the orientation parameters to match your robot
+        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.UP,
+                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
+        // Without this, the REV Hub's orientation is assumed to be logo up / USB forward
+        imu.initialize(parameters);
+
 
         shooter = hardwareMap.get(DcMotor.class, "shooter");
         intake = hardwareMap.get(DcMotor.class, "intake");
@@ -58,9 +91,17 @@ public class Test extends OpMode {
         //Limelight
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.setPollRateHz(100); // This sets how often we ask Limelight for data (100 times per second)
-        limelight.pipelineSwitch(0);
-        limelight.start(); // This tells Limelight to start looking!
+        if (team.equals("blue")) {
+            limelight.pipelineSwitch(0);
+            telemetry.addData("Limelight is on the following pipeline:", 0);
+        } else {
+            limelight.pipelineSwitch(1);
+            telemetry.addData("Limelight is on the following pipeline:", 1);
+        }
 
+
+        limelight.start(); // This tells Limelight to start looking!
+        telemetry.addData("Pipeline has been configured for team:", team);
         telemetry.addLine("Everything is initialized");
 
         telemetry.update();
@@ -68,6 +109,14 @@ public class Test extends OpMode {
 
     @Override
     public void loop(){
+
+        //DRIVE
+        Double[] powers = TestFieldCentricDrive.drive(gamepad2.left_stick_y, gamepad2.left_stick_x, gamepad2.left_stick_y, imu, true);
+        frontLeftMotor.setPower(powers[0]);
+        backLeftMotor.setPower(powers[1]);
+        frontRightMotor.setPower(powers[2]);
+        backRightMotor.setPower(powers[3]);
+
 
         LLResult result = limelight.getLatestResult();
         if (result != null && result.isValid() && gamepad1.a) {
