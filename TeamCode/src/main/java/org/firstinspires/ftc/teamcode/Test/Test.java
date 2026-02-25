@@ -115,12 +115,16 @@ public class Test extends OpMode {
     public void loop(){
 
         //DRIVE
-        Double[] powers = TestFieldCentricDrive.drive(gamepad2.left_stick_y, gamepad2.left_stick_x, gamepad2.left_stick_y, imu, true);
+        Double[] powers = TestFieldCentricDrive.drive(-gamepad2.left_stick_y, gamepad2.left_stick_x, gamepad2.right_stick_x, imu, true);
         frontLeftMotor.setPower(powers[0]);
         backLeftMotor.setPower(powers[1]);
         frontRightMotor.setPower(powers[2]);
         backRightMotor.setPower(powers[3]);
 
+
+        if (gamepad2.options) {
+            imu.resetYaw();
+        }
 
         LLResult result = limelight.getLatestResult();
         if (result != null && result.isValid() && gamepad1.a) {
@@ -199,9 +203,9 @@ public class Test extends OpMode {
         telemetry.update();
 
         if (gamepad1.dpad_down){
-            intake.setPower(1);
-        } else if (gamepad1.dpad_up){
             intake.setPower(-1);
+        } else if (gamepad1.dpad_up){
+            intake.setPower(1);
         } else {
             intake.setPower(0);
         }
@@ -213,9 +217,9 @@ public class Test extends OpMode {
         }
 
         if (gamepad1.dpad_left) {
-            turret.setPower(-1);
-        } else if (gamepad1.dpad_right) {
             turret.setPower(1);
+        } else if (gamepad1.dpad_right) {
+            turret.setPower(-1);
         } else {
             turret.setPower(0);
         }
