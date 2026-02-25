@@ -109,6 +109,6 @@ public class TestFieldCentricDrive extends LinearOpMode {
         double backLeftPower = (rotY - rotX + rx) / denominator;
         double frontRightPower = (rotY - rotX - rx) / denominator;
         double backRightPower = (rotY + rotX - rx) / denominator;
-        return new Double[]{frontLeftPower, backLeftPower, frontLeftPower, backLeftPower};
+        return new Double[]{frontLeftPower, backLeftPower, frontRightPower, backRightPower};
     }
 }
