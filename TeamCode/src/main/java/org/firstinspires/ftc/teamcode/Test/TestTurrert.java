@@ -86,4 +86,8 @@ public class TestTurrert extends OpMode {
 
     }
 
+    public static double turretAUTO(){
+       return 1.0;
+    }
+
 }
