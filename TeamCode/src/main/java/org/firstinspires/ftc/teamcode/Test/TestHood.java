@@ -2,16 +2,18 @@ package org.firstinspires.ftc.teamcode.Test;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp
 public class TestHood extends OpMode {
-    double ang = 0;
+    double power = 0;
+    double realPower = 0;
 
-    Servo hood;
+    DcMotor shooter;
 
     public void init(){
-        hood = hardwareMap.get(Servo.class, "hood");
+        shooter = hardwareMap.get(DcMotor.class, "shooter");
 
         telemetry.addLine("Initilzaed");
         telemetry.update();
@@ -19,17 +21,28 @@ public class TestHood extends OpMode {
 
     public void loop(){
         if (gamepad1.a){
-            ang = ang + 0.2;
+            power = 0;
         }
 
         if (gamepad1.b){
-            ang = ang - 0.2;
+            power = 1;
 
         }
 
-        hood.setPosition(ang);
+        if (gamepad1.left_bumper) {
+            power = gamepad1.left_stick_y;
+        }
 
-        telemetry.addData("Angle: ", ang);
+        if (gamepad1.x) {
+            shooter.setPower(power);
+            realPower = power;
+        }
+        if (gamepad1.y){
+            shooter.setPower(0);
+            realPower = 0;
+        }
+
+        telemetry.addData("Power: ", power);
         telemetry.update();
 
 
