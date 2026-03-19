@@ -17,7 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.Test.TestFieldCentricDrive;
 
 @TeleOp
-public class Master_Control_v1 extends OpMode {
+public class Master_Control_v1RED extends OpMode {
     //20 (Blue):
     // X (-58.346457 in)
     // Y (-55.629921 in)
@@ -31,7 +31,7 @@ public class Master_Control_v1 extends OpMode {
     public final double redX = 58.346457;
     public final double redY = 55.629921;
     public final double redANDblueZ = 29.488189;
-    private double levelPOS = 5;
+    private double levelPOS = 25;
     private double distance2 = 0;
 
     private DcMotor shooter;
@@ -45,7 +45,7 @@ public class Master_Control_v1 extends OpMode {
 
     public final double hoodMAX = 0;
     public final double hoodMIN = -1380.0601;
-    public String team = "blue";
+    public String team = "red";
 
     public double power = 0;
     private DcMotor wheel;
@@ -155,20 +155,20 @@ public class Master_Control_v1 extends OpMode {
             telemetry.addData("Error", error);
             double pTerm = error * kP;
 
-            double dTerm = 0;
-            if (deltaTime > 0){
-                dTerm = ((error - lastError) / deltaTime) * kD;
-            }
+            //double dTerm = 0;
+            //if (deltaTime > 0){
+            //    dTerm = ((error - lastError) / deltaTime) * kD;
+            //}
 
-            if (Math.abs(error) < angleTolerance){
-                powerTURRET = 0;
-            } else {
-                powerTURRET = Range.clip(pTerm + dTerm, -MAX_POWER, MAX_POWER * 200);
-            }
+            //if (Math.abs(error) < angleTolerance){
+            //    powerTURRET = 0;
+            //} else {
+            //    powerTURRET = Range.clip(pTerm + dTerm, -MAX_POWER, MAX_POWER * 200);
+            //}
 
             //Take this out later, and actually set the power.
-            turret.setPower(powerTURRET);
-            telemetry.addData("Power", powerTURRET);
+            turret.setPower(Range.clip(result.getTx(), -MAX_POWER, MAX_POWER));
+            telemetry.addData("Power", Range.clip(result.getTx(), -MAX_POWER, MAX_POWER));
             lastError = error;
 
 
@@ -191,6 +191,8 @@ public class Master_Control_v1 extends OpMode {
             if (botpose != null) {
                 double x = botpose.getPosition().x;
                 double y = botpose.getPosition().y;
+                telemetry.addData("Xpos", x);
+                telemetry.addData("Ypos", y);
 
                 //20 (Blue):
                 // X (-58.346457 in)
@@ -259,7 +261,6 @@ public class Master_Control_v1 extends OpMode {
             telemetry.addData("Power", power);
         }
 
-        telemetry.update();
 
         //Intake power
         if (gamepad1.dpad_down){
@@ -286,7 +287,7 @@ public class Master_Control_v1 extends OpMode {
 
         //Fly
         if (gamepad2.a){
-            fly.setPower(0.5);
+            fly.setPower(-1);
         }
 
         if (gamepad2.b){
@@ -294,15 +295,18 @@ public class Master_Control_v1 extends OpMode {
         }
 
         //Lever
-        if (gamepad2.xWasPressed()){
-            lever.setPosition(levelPOS);
-
-        }
-
-        if (gamepad2.yWasPressed()){
+        if (gamepad2.x){
             lever.setPosition(0);
+
         }
 
+        if (gamepad2.y){
+            lever.setPosition(30);
+        }
+
+        telemetry.addData("LeverPOS", lever.getPosition());
+
+        telemetry.update();
 
 
 

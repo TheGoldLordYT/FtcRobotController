@@ -3,10 +3,9 @@ package org.firstinspires.ftc.teamcode.Test;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp
-public class TestHood extends OpMode {
+public class TestShooter extends OpMode {
     double power = 0;
     double realPower = 0;
 
