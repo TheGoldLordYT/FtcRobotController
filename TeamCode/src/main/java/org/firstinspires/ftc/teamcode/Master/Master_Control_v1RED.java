@@ -192,8 +192,6 @@ public class Master_Control_v1RED extends OpMode {
         //DISTANCE
         //####################
         if (result != null && result.isValid() && false) {
-            telemetry.addData("Ta", result.getTa());
-            telemetry.addData("Distance", getDistanceFromAprilTag(result.getTa()));
             Pose3D botpose = result.getBotpose();
             if (botpose != null) {
                 double x = botpose.getPosition().x;
@@ -248,14 +246,14 @@ public class Master_Control_v1RED extends OpMode {
             hoodPOS = 0;
         }
 
-        if (gamepad1.right_trigger > 0) {
-            shooter.setPower(0.75);
-            telemetry.addData("shooterPOWER", 0.75);
+        if (gamepad1.right_trigger_pressed) {
+            shooter.setPower(0.80);
+            telemetry.addData("shooterPOWER", 0.80);
         }
 
-        if (gamepad1.left_trigger > 0) {
-            shooter.setPower(0.5);
-            telemetry.addData("shooterPOWER", 0.5);
+        if (gamepad1.left_trigger_pressed) {
+            shooter.setPower(0.60) ;
+            telemetry.addData("shooterPOWER", 0.6);
         }
 
 
@@ -297,7 +295,7 @@ public class Master_Control_v1RED extends OpMode {
 
         //Fly
         if (gamepad2.a){
-            fly.setPower(-1);
+            fly.setPower(1);
         }
 
         if (gamepad2.b){
@@ -322,12 +320,6 @@ public class Master_Control_v1RED extends OpMode {
 
     }
 
-    public double getDistanceFromAprilTag(double ta){
-        double scale = 30665.95;
-        double distance = (scale/ta);
-        return distance;
-
-    }
 
 
 
