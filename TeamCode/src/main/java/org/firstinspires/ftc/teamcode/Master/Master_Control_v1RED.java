@@ -248,7 +248,7 @@ public class Master_Control_v1RED extends OpMode {
 
         if (gamepad1.right_trigger_pressed) {
             shooter.setPower(0.80);
-            telemetry.addData("shooterPOWER", 0.80);
+            telemetry.addData("shooterPOWER", 0.775);
         }
 
         if (gamepad1.left_trigger_pressed) {
