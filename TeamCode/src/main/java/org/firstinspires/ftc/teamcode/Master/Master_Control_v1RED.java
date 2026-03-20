@@ -188,6 +188,8 @@ public class Master_Control_v1RED extends OpMode {
         }
 
 
+        result = limelight.getLatestResult();
+
         //DISTANCE
         //####################
         if (result != null && result.isValid() && gamepad1.a) {
