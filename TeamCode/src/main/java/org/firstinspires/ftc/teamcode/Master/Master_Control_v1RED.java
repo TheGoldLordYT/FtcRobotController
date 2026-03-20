@@ -148,27 +148,30 @@ public class Master_Control_v1RED extends OpMode {
         //Get the limelight result
         LLResult result = limelight.getLatestResult();
 
-
+        //AUTO AIM
+        //#################################
         if (result != null && result.isValid() && gamepad2.left_bumper) {
             telemetry.addLine("Tag found");
             double error = goalX - result.getTx();
             telemetry.addData("Error", error);
             double pTerm = error * kP;
 
-            //double dTerm = 0;
-            //if (deltaTime > 0){
-            //    dTerm = ((error - lastError) / deltaTime) * kD;
-            //}
+            double dTerm = 0;
+            if (deltaTime > 0){
+                dTerm = ((error - lastError) / deltaTime) * kD;
+            }
 
-            //if (Math.abs(error) < angleTolerance){
-            //    powerTURRET = 0;
-            //} else {
-            //    powerTURRET = Range.clip(pTerm + dTerm, -MAX_POWER, MAX_POWER * 200);
-            //}
+            if (Math.abs(error) < angleTolerance){
+                powerTURRET = 0;
+            } else {
+                powerTURRET = Range.clip(pTerm + dTerm, -MAX_POWER, MAX_POWER) * 5000;
+                telemetry.addData("The 5000 power", Range.clip(pTerm + dTerm, -MAX_POWER, MAX_POWER) * 5000);
+            }
 
             //Take this out later, and actually set the power.
-            turret.setPower(Range.clip(result.getTx(), -MAX_POWER, MAX_POWER));
+            turret.setPower(powerTURRET);
             telemetry.addData("Power", Range.clip(result.getTx(), -MAX_POWER, MAX_POWER));
+            telemetry.addData("Advance power", powerTURRET);
             lastError = error;
 
 
@@ -184,6 +187,9 @@ public class Master_Control_v1RED extends OpMode {
             imu.resetYaw();
         }
 
+
+        //DISTANCE
+        //####################
         if (result != null && result.isValid() && gamepad1.a) {
             telemetry.addData("Ta", result.getTa());
             telemetry.addData("Distance", getDistanceFromAprilTag(result.getTa()));
