@@ -25,12 +25,11 @@ public class Master_Control_v1RED extends OpMode {
     //24 (Red):
     // X (58.346457 in)
     // Y (55.629921 in)
-
     public final double blueX = -58.346457;
     public final double blueY = -55.629921;
-    public final double redX = 58.346457;
-    public final double redY = 55.629921;
-    public final double redANDblueZ = 29.488189;
+    public final double redX = 0.5877852522924731;
+    public final double redY = 0.8090169943749473;
+    public final double redANDblueZ = 0;
     private double levelPOS = 25;
     private double distance2 = 0;
 
@@ -131,7 +130,7 @@ public class Master_Control_v1RED extends OpMode {
     }
 
     @Override
-    public void loop(){
+    public void loop() {
 
         //DRIVE (Using the test feild centric)
         Double[] powers = TestFieldCentricDrive.drive(-gamepad2.left_stick_y, gamepad2.left_stick_x, gamepad2.right_stick_x, imu, true);
@@ -150,18 +149,18 @@ public class Master_Control_v1RED extends OpMode {
 
         //AUTO AIM
         //#################################
-        if (result != null && result.isValid() && gamepad2.left_bumper) {
+        if (result != null && result.isValid()) {
             telemetry.addLine("Tag found");
             double error = goalX - result.getTx();
             telemetry.addData("Error", error);
             double pTerm = error * kP;
 
             double dTerm = 0;
-            if (deltaTime > 0){
+            if (deltaTime > 0) {
                 dTerm = ((error - lastError) / deltaTime) * kD;
             }
 
-            if (Math.abs(error) < angleTolerance){
+            if (Math.abs(error) < angleTolerance) {
                 powerTURRET = 0;
             } else {
                 powerTURRET = Range.clip(pTerm + dTerm, -MAX_POWER, MAX_POWER) * 5000;
@@ -192,7 +191,7 @@ public class Master_Control_v1RED extends OpMode {
 
         //DISTANCE
         //####################
-        if (result != null && result.isValid() && gamepad1.a) {
+        if (result != null && result.isValid() && false) {
             telemetry.addData("Ta", result.getTa());
             telemetry.addData("Distance", getDistanceFromAprilTag(result.getTa()));
             Pose3D botpose = result.getBotpose();
@@ -211,21 +210,21 @@ public class Master_Control_v1RED extends OpMode {
                 // Y (55.629921 in)
                 if (team.equals("blue")) {
                     distance2 = Math.sqrt(
-                            Math.pow(blueX - x,2)
-                            +
-                            Math.pow(blueY - y,2));
+                            Math.pow(blueX - x, 2)
+                                    +
+                                    Math.pow(blueY - y, 2));
                 } else {
                     distance2 = Math.sqrt(
-                            Math.pow(redX - x,2)
-                            +
-                            Math.pow(redY - y,2));
+                            Math.pow(redX - x, 2)
+                                    +
+                                    Math.pow(redY - y, 2));
                 }
 
                 //Since the z height is the same for both.
                 distance2 = Math.sqrt(
-                        Math.pow(distance2,2)
-                        +
-                        Math.pow(redANDblueZ,2) );
+                        Math.pow(distance2, 2)
+                                +
+                                Math.pow(redANDblueZ, 2));
 
                 telemetry.addData("Distance2", distance2);
 
@@ -236,7 +235,7 @@ public class Master_Control_v1RED extends OpMode {
         }
 
         //Using the hood. Added some limits so the hood position is more accurate (it is still not good.)
-        if (((hoodPOS + gamepad1.left_stick_y) > hoodMIN) && (hoodPOS + gamepad1.left_stick_y) < hoodMAX){
+        if (((hoodPOS + gamepad1.left_stick_y) > hoodMIN) && (hoodPOS + gamepad1.left_stick_y) < hoodMAX) {
             if (Math.abs(gamepad1.left_stick_y) == 1 || gamepad1.left_stick_y == 0) {
                 hood.setPower(gamepad1.left_stick_y);
                 hoodPOS += gamepad1.left_stick_y;
@@ -245,24 +244,27 @@ public class Master_Control_v1RED extends OpMode {
         //Hood position added to the telemetry.
         telemetry.addData("HoodPOS", hoodPOS);
 
-        if (gamepad1.right_bumper){
+        if (gamepad1.right_bumper) {
             hoodPOS = 0;
         }
 
-        if (gamepad1.x){
-            shooter.setPower(1);
-            telemetry.addData("shooterPOWER", 1);
+        if (gamepad1.right_trigger > 0) {
+            shooter.setPower(0.75);
+            telemetry.addData("shooterPOWER", 0.75);
         }
+
+        if (gamepad1.left_trigger > 0) {
+            shooter.setPower(0.5);
+            telemetry.addData("shooterPOWER", 0.5);
+        }
+
 
         if (gamepad1.y){
             shooter.setPower(0);
             telemetry.addData("shooterPOWER", 0);
         }
 
-        if (gamepad1.b){
-            shooter.setPower(-power);
-            telemetry.addData("shooterPOWER", power);
-        }
+
 
         if (gamepad1.left_bumper) {
             power = gamepad1.right_stick_y;
