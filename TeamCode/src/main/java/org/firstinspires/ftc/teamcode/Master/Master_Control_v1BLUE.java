@@ -32,8 +32,8 @@ public class Master_Control_v1BLUE extends OpMode {
     public final double redANDblueZ = 0;
     private double levelPOS = 25;
     private double distance2 = 0;
-
     private DcMotor shooter;
+    private DcMotor shooter2;
     private DcMotor intake;
     private CRServo hood;
     private CRServo turret;
@@ -100,6 +100,7 @@ public class Master_Control_v1BLUE extends OpMode {
 
 
         shooter = hardwareMap.get(DcMotor.class, "shooter");
+        shooter2 = hardwareMap.get(DcMotor.class, "shooter2");
         intake = hardwareMap.get(DcMotor.class, "intake");
         wheel = hardwareMap.get(DcMotor.class, "wheel");
         fly  = hardwareMap.get(DcMotor.class, "fly");
@@ -109,6 +110,7 @@ public class Master_Control_v1BLUE extends OpMode {
 
 
         shooter.setDirection(DcMotorSimple.Direction.REVERSE);
+
 
         //Limelight
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
@@ -248,24 +250,30 @@ public class Master_Control_v1BLUE extends OpMode {
 
         if (gamepad1.right_trigger_pressed) {
             shooter.setPower(0.77);
+            shooter2.setPower(0.77);
             telemetry.addData("shooterPOWER", 0.775);
         }
 
         if (gamepad1.left_trigger_pressed) {
             shooter.setPower(0.60) ;
+            shooter2.setPower(0.60);
             telemetry.addData("shooterPOWER", 0.6);
         }
 
 
         if (gamepad1.y){
             shooter.setPower(0);
+            shooter2.setPower(0);
             telemetry.addData("shooterPOWER", 0);
         }
 
         if (gamepad1.b){
             shooter.setPower(-1);
+            shooter2.setPower(-1);
         } else if (shooter.getPower() == -1) {
             shooter.setPower(0);
+            shooter2.setPower(0);
+
         }
 
 
