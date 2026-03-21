@@ -17,7 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.teamcode.Test.TestFieldCentricDrive;
 
 @TeleOp
-public class Master_Control_v1 extends OpMode {
+public class Master_Control_v1BLUE extends OpMode {
     //20 (Blue):
     // X (-58.346457 in)
     // Y (-55.629921 in)
@@ -25,13 +25,12 @@ public class Master_Control_v1 extends OpMode {
     //24 (Red):
     // X (58.346457 in)
     // Y (55.629921 in)
-
     public final double blueX = -58.346457;
     public final double blueY = -55.629921;
-    public final double redX = 58.346457;
-    public final double redY = 55.629921;
-    public final double redANDblueZ = 29.488189;
-    private double levelPOS = 5;
+    public final double redX = 0.5877852522924731;
+    public final double redY = 0.8090169943749473;
+    public final double redANDblueZ = 0;
+    private double levelPOS = 25;
     private double distance2 = 0;
 
     private DcMotor shooter;
@@ -131,7 +130,7 @@ public class Master_Control_v1 extends OpMode {
     }
 
     @Override
-    public void loop(){
+    public void loop() {
 
         //DRIVE (Using the test feild centric)
         Double[] powers = TestFieldCentricDrive.drive(-gamepad2.left_stick_y, gamepad2.left_stick_x, gamepad2.right_stick_x, imu, true);
@@ -148,27 +147,30 @@ public class Master_Control_v1 extends OpMode {
         //Get the limelight result
         LLResult result = limelight.getLatestResult();
 
-
-        if (result != null && result.isValid() && gamepad2.left_bumper) {
+        //AUTO AIM
+        //#################################
+        if (result != null && result.isValid()) {
             telemetry.addLine("Tag found");
             double error = goalX - result.getTx();
             telemetry.addData("Error", error);
             double pTerm = error * kP;
 
             double dTerm = 0;
-            if (deltaTime > 0){
+            if (deltaTime > 0) {
                 dTerm = ((error - lastError) / deltaTime) * kD;
             }
 
-            if (Math.abs(error) < angleTolerance){
+            if (Math.abs(error) < angleTolerance) {
                 powerTURRET = 0;
             } else {
-                powerTURRET = Range.clip(pTerm + dTerm, -MAX_POWER, MAX_POWER * 200);
+                powerTURRET = Range.clip(pTerm + dTerm, -MAX_POWER, MAX_POWER) * 5000;
+                telemetry.addData("The 5000 power", Range.clip(pTerm + dTerm, -MAX_POWER, MAX_POWER) * 5000);
             }
 
             //Take this out later, and actually set the power.
             turret.setPower(powerTURRET);
-            telemetry.addData("Power", powerTURRET);
+            telemetry.addData("Power", Range.clip(result.getTx(), -MAX_POWER, MAX_POWER));
+            telemetry.addData("Advance power", powerTURRET);
             lastError = error;
 
 
@@ -184,13 +186,18 @@ public class Master_Control_v1 extends OpMode {
             imu.resetYaw();
         }
 
-        if (result != null && result.isValid() && gamepad1.a) {
-            telemetry.addData("Ta", result.getTa());
-            telemetry.addData("Distance", getDistanceFromAprilTag(result.getTa()));
+
+        result = limelight.getLatestResult();
+
+        //DISTANCE
+        //####################
+        if (result != null && result.isValid() && false) {
             Pose3D botpose = result.getBotpose();
             if (botpose != null) {
                 double x = botpose.getPosition().x;
                 double y = botpose.getPosition().y;
+                telemetry.addData("Xpos", x);
+                telemetry.addData("Ypos", y);
 
                 //20 (Blue):
                 // X (-58.346457 in)
@@ -201,21 +208,21 @@ public class Master_Control_v1 extends OpMode {
                 // Y (55.629921 in)
                 if (team.equals("blue")) {
                     distance2 = Math.sqrt(
-                            Math.pow(blueX - x,2)
-                            +
-                            Math.pow(blueY - y,2));
+                            Math.pow(blueX - x, 2)
+                                    +
+                                    Math.pow(blueY - y, 2));
                 } else {
                     distance2 = Math.sqrt(
-                            Math.pow(redX - x,2)
-                            +
-                            Math.pow(redY - y,2));
+                            Math.pow(redX - x, 2)
+                                    +
+                                    Math.pow(redY - y, 2));
                 }
 
                 //Since the z height is the same for both.
                 distance2 = Math.sqrt(
-                        Math.pow(distance2,2)
-                        +
-                        Math.pow(redANDblueZ,2) );
+                        Math.pow(distance2, 2)
+                                +
+                                Math.pow(redANDblueZ, 2));
 
                 telemetry.addData("Distance2", distance2);
 
@@ -226,7 +233,7 @@ public class Master_Control_v1 extends OpMode {
         }
 
         //Using the hood. Added some limits so the hood position is more accurate (it is still not good.)
-        if (((hoodPOS + gamepad1.left_stick_y) > hoodMIN) && (hoodPOS + gamepad1.left_stick_y) < hoodMAX){
+        if (((hoodPOS + gamepad1.left_stick_y) > hoodMIN) && (hoodPOS + gamepad1.left_stick_y) < hoodMAX) {
             if (Math.abs(gamepad1.left_stick_y) == 1 || gamepad1.left_stick_y == 0) {
                 hood.setPower(gamepad1.left_stick_y);
                 hoodPOS += gamepad1.left_stick_y;
@@ -235,14 +242,20 @@ public class Master_Control_v1 extends OpMode {
         //Hood position added to the telemetry.
         telemetry.addData("HoodPOS", hoodPOS);
 
-        if (gamepad1.right_bumper){
+        if (gamepad1.right_bumper) {
             hoodPOS = 0;
         }
 
-        if (gamepad1.x){
-            shooter.setPower(1);
-            telemetry.addData("shooterPOWER", 1);
+        if (gamepad1.right_trigger_pressed) {
+            shooter.setPower(0.77);
+            telemetry.addData("shooterPOWER", 0.775);
         }
+
+        if (gamepad1.left_trigger_pressed) {
+            shooter.setPower(0.60) ;
+            telemetry.addData("shooterPOWER", 0.6);
+        }
+
 
         if (gamepad1.y){
             shooter.setPower(0);
@@ -250,16 +263,17 @@ public class Master_Control_v1 extends OpMode {
         }
 
         if (gamepad1.b){
-            shooter.setPower(-power);
-            telemetry.addData("shooterPOWER", power);
+            shooter.setPower(-1);
+        } else if (shooter.getPower() == -1) {
+            shooter.setPower(0);
         }
+
 
         if (gamepad1.left_bumper) {
             power = gamepad1.right_stick_y;
             telemetry.addData("Power", power);
         }
 
-        telemetry.update();
 
         //Intake power
         if (gamepad1.dpad_down){
@@ -286,7 +300,7 @@ public class Master_Control_v1 extends OpMode {
 
         //Fly
         if (gamepad2.a){
-            fly.setPower(0.5);
+            fly.setPower(1);
         }
 
         if (gamepad2.b){
@@ -294,26 +308,23 @@ public class Master_Control_v1 extends OpMode {
         }
 
         //Lever
-        if (gamepad2.xWasPressed()){
-            lever.setPosition(levelPOS);
-
-        }
-
-        if (gamepad2.yWasPressed()){
+        if (gamepad2.x){
             lever.setPosition(0);
+
         }
 
+        if (gamepad2.y){
+            lever.setPosition(levelPOS);
+        }
+
+        telemetry.addData("LeverPOS", lever.getPosition());
+
+        telemetry.update();
 
 
 
     }
 
-    public double getDistanceFromAprilTag(double ta){
-        double scale = 30665.95;
-        double distance = (scale/ta);
-        return distance;
-
-    }
 
 
 

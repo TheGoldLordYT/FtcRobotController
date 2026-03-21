@@ -247,7 +247,7 @@ public class Master_Control_v1RED extends OpMode {
         }
 
         if (gamepad1.right_trigger_pressed) {
-            shooter.setPower(0.80);
+            shooter.setPower(0.77);
             telemetry.addData("shooterPOWER", 0.775);
         }
 
@@ -314,7 +314,7 @@ public class Master_Control_v1RED extends OpMode {
         }
 
         if (gamepad2.y){
-            lever.setPosition(30);
+            lever.setPosition(levelPOS);
         }
 
         telemetry.addData("LeverPOS", lever.getPosition());
