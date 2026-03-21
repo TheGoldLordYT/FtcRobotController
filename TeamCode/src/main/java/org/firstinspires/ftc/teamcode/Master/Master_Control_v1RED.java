@@ -262,6 +262,11 @@ public class Master_Control_v1RED extends OpMode {
             telemetry.addData("shooterPOWER", 0);
         }
 
+        if (gamepad1.b){
+            shooter.setPower(-1);
+        } else if (shooter.getPower() == -1) {
+            shooter.setPower(0);
+        }
 
 
         if (gamepad1.left_bumper) {

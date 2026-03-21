@@ -26,9 +26,9 @@ public class Master_Auto extends LinearOpMode {
 
         sleep(6000);
 
-        intake.setPower(1);
+        intake.setPower(-1);
         fly.setPower(1);
-        wheel.setPower(-1);
+        wheel.setPower(1);
 
         sleep(6000);
 
